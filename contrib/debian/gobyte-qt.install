@@ -1,0 +1,6 @@
+usr/local/bin/BitmexCoin-qt usr/bin
+share/pixmaps/BitmexCoin32.xpm usr/share/pixmaps
+share/pixmaps/BitmexCoin16.xpm usr/share/pixmaps
+share/pixmaps/BitmexCoin128.png usr/share/pixmaps
+debian/BitmexCoin-qt.desktop usr/share/applications
+debian/BitmexCoin-qt.protocol usr/share/kde4/services/

@@ -1,0 +1,68 @@
+Source: BitmexCoin
+Section: utils
+Priority: optional
+Maintainer: Holger Schinzel +ADw-holger+AEA-BitmexCoin.org+AD4-
+Uploaders: Holger Schinzel +ADw-holger+AEA-BitmexCoin.org+AD4-
+Build-Depends: debhelper,
+ devscripts,
+ automake,
+ libtool,
+ bash-completion,
+ libdb4.8dev,
+ libssl-dev,
+ pkg-config,
+ libevent-dev,
+ libboost-system1.48-dev +AHw- libboost-system-dev (+AD4APg- 1.35),
+ libboost-filesystem1.48-dev +AHw- libboost-filesystem-dev (+AD4APg- 1.35),
+ libboost-program-options1.48-dev +AHw- libboost-program-options-dev (+AD4APg- 1.35),
+ libboost-thread1.48-dev +AHw- libboost-thread-dev (+AD4APg- 1.35),
+ libboost-test1.48-dev +AHw- libboost-test-dev (+AD4APg- 1.35),
+ libboost-chrono1.48-dev +AHw- libboost-chrono-dev (+AD4APg- 1.35),
+ qt4-qmake,
+ libqt4-dev,
+ libqrencode-dev,
+ libprotobuf-dev, protobuf-compiler,
+ python
+Standards-Version: 3.9.2
+Homepage: https://www.BitmexCoin.org/
+Vcs-Git: git://github.com/BitmexCoincoin/BitmexCoin.git
+Vcs-Browser: https://github.com/BitmexCoincoin/BitmexCoin
+
+Package: BitmexCoind
+Architecture: any
+Depends: +ACQAew-shlibs:Depends+AH0-, +ACQAew-misc:Depends+AH0-
+Description: peer-to-peer network based digital currency - daemon
+ BitmexCoin is an experimental new digital currency that enables anonymous, instant
+ payments to anyone, anywhere in the world. BitmexCoin uses peer-to-peer
+ technology to operate with no central authority: managing transactions
+ and issuing money are carried out collectively by the network. BitmexCoin Core
+ is the name of the open source software which enables the use of this currency.
+ .
+ This package provides the daemon, BitmexCoind, and the CLI tool
+ BitmexCoin-cli to interact with the daemon.
+
+Package: BitmexCoin-qt
+Architecture: any
+Depends: +ACQAew-shlibs:Depends+AH0-, +ACQAew-misc:Depends+AH0-
+Description: peer-to-peer network based digital currency - Qt GUI
+ BitmexCoin is an experimental new digital currency that enables anonymous, instant
+ payments to anyone, anywhere in the world. BitmexCoin uses peer-to-peer
+ technology to operate with no central authority: managing transactions
+ and issuing money are carried out collectively by the network. BitmexCoin Core
+ is the name of the open source software which enables the use of this currency.
+ .
+ This package provides BitmexCoin-Qt, a GUI for BitmexCoin based on Qt.
+
+Package: BitmexCoin-tx
+Architecture: any
+Depends: +ACQAew-shlibs:Depends+AH0-, +ACQAew-misc:Depends+AH0-
+Description: peer-to-peer digital currency - standalone transaction tool
+ BitmexCoin is an experimental new digital currency that enables anonymous, instant
+ payments to anyone, anywhere in the world. BitmexCoin uses peer-to-peer
+ technology to operate with no central authority: managing transactions
+ and issuing money are carried out collectively by the network. BitmexCoin Core
+ is the name of the open source software which enables the use of this currency.
+ .
+ This package provides BitmexCoin-tx, a command-line transaction creation
+ tool which can be used without a BitmexCoin daemon.  Some means of
+ exchanging minimal transaction data with peers is still required.

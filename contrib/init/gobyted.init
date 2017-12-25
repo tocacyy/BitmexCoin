@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  BitmexCoind The BitmexCoin Core server.
+#
+#
+# chkconfig: 345 80 20
+# description: BitmexCoind
+# processname: BitmexCoind
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/BitmexCoind, see below
+if [ -f /etc/sysconfig/BitmexCoind ]; then
+        . /etc/sysconfig/BitmexCoind
+fi
+
+RETVAL=0
+
+prog=BitmexCoind
+# you can override the lockfile via BITCOIND_LOCKFILE in /etc/sysconfig/BitmexCoind
+lockfile=${BITCOIND_LOCKFILE-/var/lock/subsys/BitmexCoind}
+
+# BitmexCoind defaults to /usr/bin/BitmexCoind, override with BITCOIND_BIN
+BitmexCoind=${BITCOIND_BIN-/usr/bin/BitmexCoind}
+
+# BitmexCoind opts default to -disablewallet, override with BITCOIND_OPTS
+BitmexCoind_opts=${BITCOIND_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $BitmexCoind $BitmexCoind_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac
