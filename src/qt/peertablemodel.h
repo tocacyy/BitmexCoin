@@ -1,22 +1,20 @@
-// Copyright (c) 2011-2015 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_PEERTABLEMODEL_H
-#define BITCOIN_QT_PEERTABLEMODEL_H
+#ifndef PEERTABLEMODEL_H
+#define PEERTABLEMODEL_H
 
-#include "main.h" // For CNodeStateStats
+#include "main.h"
 #include "net.h"
 
 #include <QAbstractTableModel>
 #include <QStringList>
 
-class ClientModel;
 class PeerTablePriv;
+class ClientModel;
 
-QT_BEGIN_NAMESPACE
 class QTimer;
-QT_END_NAMESPACE
 
 struct CNodeCombinedStats {
     CNodeStats nodeStats;
@@ -27,7 +25,7 @@ struct CNodeCombinedStats {
 class NodeLessThan
 {
 public:
-    NodeLessThan(int nColumn, Qt::SortOrder fOrder) :
+    NodeLessThan(int nColumn, Qt::SortOrder fOrder):
         column(nColumn), order(fOrder) {}
     bool operator()(const CNodeCombinedStats &left, const CNodeCombinedStats &right) const;
 
@@ -68,7 +66,7 @@ public:
     void sort(int column, Qt::SortOrder order);
     /*@}*/
 
-public Q_SLOTS:
+public slots:
     void refresh();
 
 private:
@@ -76,6 +74,7 @@ private:
     QStringList columns;
     PeerTablePriv *priv;
     QTimer *timer;
+
 };
 
-#endif // BITCOIN_QT_PEERTABLEMODEL_H
+#endif // PEERTABLEMODEL_H

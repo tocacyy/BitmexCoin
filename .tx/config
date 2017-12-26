@@ -1,7 +1,0 @@
-[main]
-host = https://www.transifex.com
-
-[BitmexCoin.qt-translation-012x]
-file_filter = src/qt/locale/BitmexCoin_<lang>.ts
-source_file = src/qt/locale/BitmexCoin_en.ts
-source_lang = en

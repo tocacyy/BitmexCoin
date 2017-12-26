@@ -1,14 +1,10 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+#ifndef TRANSACTIONFILTERPROXY_H
+#define TRANSACTIONFILTERPROXY_H
 
-#ifndef BITCOIN_QT_TRANSACTIONFILTERPROXY_H
-#define BITCOIN_QT_TRANSACTIONFILTERPROXY_H
+#include "util.h"
 
-#include "amount.h"
-
-#include <QDateTime>
 #include <QSortFilterProxyModel>
+#include <QDateTime>
 
 /** Filter the transaction list according to pre-specified rules. */
 class TransactionFilterProxy : public QSortFilterProxyModel
@@ -67,4 +63,4 @@ private:
     bool showInactive;
 };
 
-#endif // BITCOIN_QT_TRANSACTIONFILTERPROXY_H
+#endif // TRANSACTIONFILTERPROXY_H

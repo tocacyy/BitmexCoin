@@ -1,25 +1,17 @@
-// Copyright (c) 2011-2015 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
-#ifndef BITCOIN_QT_RPCCONSOLE_H
-#define BITCOIN_QT_RPCCONSOLE_H
+#ifndef RPCCONSOLE_H
+#define RPCCONSOLE_H
 
 #include "guiutil.h"
-#include "peertablemodel.h"
-
 #include "net.h"
 
-#include <QWidget>
-#include <QCompleter>
+#include "peertablemodel.h"
 
-class ClientModel;
-class PlatformStyle;
-class RPCTimerInterface;
+#include <QWidget>
 
 namespace Ui {
     class RPCConsole;
 }
+class ClientModel;
 
 QT_BEGIN_NAMESPACE
 class QMenu;
@@ -32,7 +24,7 @@ class RPCConsole: public QWidget
     Q_OBJECT
 
 public:
-    explicit RPCConsole(const PlatformStyle *platformStyle, QWidget *parent);
+    explicit RPCConsole(QWidget *parent = 0);
     ~RPCConsole();
 
     void setClientModel(ClientModel *model);
@@ -45,23 +37,17 @@ public:
         CMD_ERROR
     };
 
-    enum TabTypes {
-        TAB_INFO = 0,
-        TAB_CONSOLE = 1,
-        TAB_GRAPH = 2,
-        TAB_PEERS = 3,
-        TAB_REPAIR = 4
-    };
-
 protected:
     virtual bool eventFilter(QObject* obj, QEvent *event);
     void keyPressEvent(QKeyEvent *);
 
-private Q_SLOTS:
+private slots:
     void on_lineEdit_returnPressed();
     void on_tabWidget_currentChanged(int index);
     /** open the debug.log from the current datadir */
     void on_openDebugLogfileButton_clicked();
+    /** display messagebox with program parameters (same as bitcoin-qt --help) */
+    void on_showCLOptionsButton_clicked();
     /** change the time range of the network traffic graph */
     void on_sldGraphRange_valueChanged(int value);
     /** update traffic statistics */
@@ -77,28 +63,22 @@ private Q_SLOTS:
     void showOrHideBanTableIfRequired();
     /** clear the selected node */
     void clearSelectedNode();
+    /** clear traffic graph */
+    void on_btnClearTrafficGraph_clicked();
+    /** paste clipboard to line */
+    void on_pasteButton_clicked();
+    /** copy to clipboard */
+    void on_copyButton_clicked();
 
-public Q_SLOTS:
+public slots:
     void clear();
-    
-    /** Wallet repair options */
-    void walletSalvage();
-    void walletRescan();
-    void walletZaptxes1();
-    void walletZaptxes2();
-    void walletUpgrade();
-    void walletReindex();
-    
-    /** Append the message to the message widget */
     void message(int category, const QString &message, bool html = false);
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
+    /** Set number of blocks shown in the UI */
+    void setNumBlocks(int count);
     /** Set number of masternodes shown in the UI */
     void setMasternodeCount(const QString &strMasternodes);
-    /** Set number of blocks and last block date shown in the UI */
-    void setNumBlocks(int count, const QDateTime& blockDate, double nVerificationProgress);
-    /** Set size (number of transactions and memory usage) of the mempool in the UI */
-    void setMempoolSize(long numberOfTxs, size_t dynUsage);
     /** Go forward or back in history */
     void browseHistory(int offset);
     /** Scroll console view to end */
@@ -107,35 +87,30 @@ public Q_SLOTS:
     void peerSelected(const QItemSelection &selected, const QItemSelection &deselected);
     /** Handle updated peer information */
     void peerLayoutChanged();
-    /** Disconnect a selected node on the Peers tab */
+   /** Disconnect a selected node on the Peers tab */
     void disconnectSelectedNode();
     /** Ban a selected node on the Peers tab */
     void banSelectedNode(int bantime);
     /** Unban a selected node on the Bans tab */
     void unbanSelectedNode();
-    /** set which tab has the focus (is visible) */
-    void setTabFocus(enum TabTypes tabType);
-
-Q_SIGNALS:
+    /** Show folder with wallet backups in default browser */
+    void showBackups();
+signals:
     // For RPC command executor
     void stopExecutor();
     void cmdRequest(const QString &command);
-    /** Get restart command-line parameters and handle restart */
-    void handleRestart(QStringList args);
 
 private:
     static QString FormatBytes(quint64 bytes);
     void startExecutor();
     void setTrafficGraphRange(int mins);
-    /** Build parameter list for restart */
-    void buildParameterlist(QString arg);
     /** show detailed information on ui about selected node */
     void updateNodeDetail(const CNodeCombinedStats *stats);
 
     enum ColumnWidths
     {
-        ADDRESS_COLUMN_WIDTH = 170,
-        SUBVERSION_COLUMN_WIDTH = 150,
+        ADDRESS_COLUMN_WIDTH = 200,
+        SUBVERSION_COLUMN_WIDTH = 100,
         PING_COLUMN_WIDTH = 80,
         BANSUBNET_COLUMN_WIDTH = 200,
         BANTIME_COLUMN_WIDTH = 250
@@ -147,11 +122,9 @@ private:
     QStringList history;
     int historyPtr;
     NodeId cachedNodeid;
-    const PlatformStyle *platformStyle;
-    RPCTimerInterface *rpcTimerInterface;
     QMenu *peersTableContextMenu;
     QMenu *banTableContextMenu;
-    QCompleter *autoCompleter;
+
 };
 
-#endif // BITCOIN_QT_RPCCONSOLE_H
+#endif // RPCCONSOLE_H

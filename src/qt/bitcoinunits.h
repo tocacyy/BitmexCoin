@@ -1,16 +1,10 @@
-// Copyright (c) 2011-2015 The Bitcoin Core developers
-// Copyright (c) 2014-2017 The Dash Core developers
-// Copyright (c) 2017-2018 The BitmexCoin Core developers
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+#ifndef BITCOINUNITS_H
+#define BITCOINUNITS_H
 
-#ifndef BITCOIN_QT_BITCOINUNITS_H
-#define BITCOIN_QT_BITCOINUNITS_H
+#include "util.h"
 
-#include "amount.h"
-
-#include <QAbstractListModel>
 #include <QString>
+#include <QAbstractListModel>
 
 // U+2009 THIN SPACE = UTF-8 E2 80 89
 #define REAL_THIN_SP_CP 0x2009
@@ -43,7 +37,7 @@
 #define THIN_SP_UTF8 REAL_THIN_SP_UTF8
 #define THIN_SP_HTML HTML_HACK_SP
 
-/** BitmexCoin unit definitions. Encapsulates parsing and formatting
+/** Bitcoin unit definitions. Encapsulates parsing and formatting
    and serves as list model for drop-down selection boxes.
 */
 class BitcoinUnits: public QAbstractListModel
@@ -53,15 +47,14 @@ class BitcoinUnits: public QAbstractListModel
 public:
     explicit BitcoinUnits(QObject *parent);
 
-    /** BitmexCoin units.
+    /** Bitcoin units.
       @note Source: https://en.bitcoin.it/wiki/Units . Please add only sensible ones
      */
     enum Unit
     {
-        BMEC,
-        mBMEC,
-        uBMEC,
-        duffs
+        BTC,
+        mBTC,
+        uBTC
     };
 
     enum SeparatorStyle
@@ -85,6 +78,8 @@ public:
     static QString description(int unit);
     //! Number of Satoshis (1e-8) per unit
     static qint64 factor(int unit);
+    //! Number of amount digits (to represent max number of coins)
+    static int amountDigits(int unit);
     //! Number of decimals left
     static int decimals(int unit);
     //! Format as string
@@ -92,7 +87,6 @@ public:
     static QString simpleFormat(int unit, const CAmount& amount, bool plussign=false, SeparatorStyle separators=separatorStandard);
     //! Format as string (with unit)
     static QString formatWithUnit(int unit, const CAmount& amount, bool plussign=false, SeparatorStyle separators=separatorStandard);
-    //! Format as HTML string (with unit)
     static QString formatHtmlWithUnit(int unit, const CAmount& amount, bool plussign=false, SeparatorStyle separators=separatorStandard);
     //! Format as string (with unit) but floor value up to "digits" settings
     static QString floorWithUnit(int unit, const CAmount& amount, bool plussign=false, SeparatorStyle separators=separatorStandard);
@@ -113,7 +107,6 @@ public:
     int rowCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
     ///@}
-
     static QString removeSpaces(QString text)
     {
         text.remove(' ');
@@ -132,4 +125,4 @@ private:
 };
 typedef BitcoinUnits::Unit BitcoinUnit;
 
-#endif // BITCOIN_QT_BITCOINUNITS_H
+#endif // BITCOINUNITS_H

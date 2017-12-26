@@ -1,11 +1,5 @@
-// Copyright (c) 2011-2015 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
-#ifndef BITCOIN_QT_GUIUTIL_H
-#define BITCOIN_QT_GUIUTIL_H
-
-#include "amount.h"
+#ifndef GUIUTIL_H
+#define GUIUTIL_H
 
 #include <QEvent>
 #include <QHeaderView>
@@ -17,19 +11,18 @@
 
 #include <boost/filesystem.hpp>
 
-class QValidatedLineEdit;
 class SendCoinsRecipient;
 
 QT_BEGIN_NAMESPACE
-class QAbstractItemView;
-class QDateTime;
 class QFont;
 class QLineEdit;
-class QUrl;
 class QWidget;
+class QDateTime;
+class QUrl;
+class QAbstractItemView;
 QT_END_NAMESPACE
 
-/** Utility functions used by the BitmexCoin Qt UI.
+/** Utility functions used by the Bitcoin Qt UI.
  */
 namespace GUIUtil
 {
@@ -37,20 +30,17 @@ namespace GUIUtil
     QString dateTimeStr(const QDateTime &datetime);
     QString dateTimeStr(qint64 nTime);
 
-    // Return a monospace font
-    QFont fixedPitchFont();
+    // Render Bitcoin addresses in monospace font
+    QFont bitcoinAddressFont();
 
     // Set up widgets for address and amounts
-    void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent);
+    void setupAddressWidget(QLineEdit *widget, QWidget *parent);
     void setupAmountWidget(QLineEdit *widget, QWidget *parent);
 
-    // Parse "BitmexCoin:" URI into recipient object, return true on successful parsing
+    // Parse "bitmexcoin:" URI into recipient object, return true on successful parsing
+    // See Bitcoin URI definition discussion here: https://bitcointalk.org/index.php?topic=33490.0
     bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out);
     bool parseBitcoinURI(QString uri, SendCoinsRecipient *out);
-    QString formatBitcoinURI(const SendCoinsRecipient &info);
-
-    // Returns true if given address+amount meets "dust" definition
-    bool isDust(const QString& address, const CAmount& amount);
 
     // HTML escaping for rich text controls
     QString HtmlEscape(const QString& str, bool fMultiLine=false);
@@ -84,22 +74,9 @@ namespace GUIUtil
       @param[out] selectedSuffixOut  Pointer to return the suffix (file type) that was selected (or 0).
                   Can be useful when choosing the save file format based on suffix.
      */
-    QString getSaveFileName(QWidget *parent, const QString &caption, const QString &dir,
-        const QString &filter,
-        QString *selectedSuffixOut);
-
-    /** Get open filename, convenience wrapper for QFileDialog::getOpenFileName.
-
-      @param[in] parent  Parent window (or 0)
-      @param[in] caption Window caption (or empty, for default)
-      @param[in] dir     Starting directory (or empty, to default to documents directory)
-      @param[in] filter  Filter specification such as "Comma Separated Files (*.csv)"
-      @param[out] selectedSuffixOut  Pointer to return the suffix (file type) that was selected (or 0).
-                  Can be useful when choosing the save file format based on suffix.
-     */
-    QString getOpenFileName(QWidget *parent, const QString &caption, const QString &dir,
-        const QString &filter,
-        QString *selectedSuffixOut);
+    QString getSaveFileName(QWidget *parent=0, const QString &caption=QString(),
+                                   const QString &dir=QString(), const QString &filter=QString(),
+                                   QString *selectedSuffixOut=0);
 
     /** Get connection type to call object slot in GUI thread with invokeMethod. The call will be blocking.
 
@@ -113,13 +90,7 @@ namespace GUIUtil
 
     // Open debug.log
     void openDebugLogfile();
-	
-    // Open BitmexCoin.conf
-    void openConfigfile();	
-
-    // Open masternode.conf
-    void openMNConfigfile();	
-
+    
     // Browse backup folder
     void showBackups();
 
@@ -178,7 +149,7 @@ namespace GUIUtil
             void setViewHeaderResizeMode(int logicalIndex, QHeaderView::ResizeMode resizeMode);
             void resizeColumn(int nColumnIndex, int width);
 
-        private Q_SLOTS:
+        private slots:
             void on_sectionResized(int logicalIndex, int oldSize, int newSize);
             void on_geometriesChanged();
     };
@@ -186,20 +157,6 @@ namespace GUIUtil
     bool GetStartOnSystemStartup();
     bool SetStartOnSystemStartup(bool fAutoStart);
 
-    /** Modify Qt network specific settings on migration */
-    void migrateQtSettings();
-
-    /** Save window size and position */
-    void saveWindowGeometry(const QString& strSetting, QWidget *parent);
-    /** Restore window size and position */
-    void restoreWindowGeometry(const QString& strSetting, const QSize &defaultSizeIn, QWidget *parent);
-
-    /** Load global CSS theme */
-    QString loadStyleSheet();
-
-    /** Return name of current CSS theme */
-    QString getThemeName();
-    
     /* Convert QString to OS specific boost path through UTF-8 */
     boost::filesystem::path qstringToBoostPath(const QString &path);
 
@@ -210,13 +167,36 @@ namespace GUIUtil
     QString formatDurationStr(int secs);
 
     /* Format CNodeStats.nServices bitmask into a user-readable string */
-    QString formatServicesStr(quint64 mask);
+    QString formatServicesStr(uint64_t mask);
 
     /* Format a CNodeCombinedStats.dPingTime into a user-readable string or display N/A, if 0*/
     QString formatPingTime(double dPingTime);
 
     /* Format a CNodeCombinedStats.nTimeOffset into a user-readable string. */
     QString formatTimeOffset(int64_t nTimeOffset);
+
+
+    /** Help message for Bitcoin-Qt, shown with --help. */
+    class HelpMessageBox : public QMessageBox
+    {
+        Q_OBJECT
+
+    public:
+        HelpMessageBox(QWidget *parent = 0);
+
+        /** Show message box or print help message to standard output, based on operating system. */
+        void showOrPrint();
+
+        /** Print help message to console */
+        void printToConsole();
+
+    private:
+        QString header;
+        QString coreOptions;
+        QString uiOptions;
+    };
+
+    void SetBlackThemeQSS(QApplication& app);
 
 #if defined(Q_OS_MAC) && QT_VERSION >= 0x050000
     // workaround for Qt OSX Bug:
@@ -234,4 +214,4 @@ namespace GUIUtil
 
 } // namespace GUIUtil
 
-#endif // BITCOIN_QT_GUIUTIL_H
+#endif // GUIUTIL_H

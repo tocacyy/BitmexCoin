@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-/** A hasher class for HMAC-SHA-256. */
+/** A hasher class for HMAC-SHA-512. */
 class CHMAC_SHA256
 {
 private:

@@ -1,15 +1,11 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "transactionfilterproxy.h"
 
 #include "transactiontablemodel.h"
 #include "transactionrecord.h"
 
-#include <cstdlib>
-
 #include <QDateTime>
+
+#include <cstdlib>
 
 // Earliest date that can be represented (far in the past)
 const QDateTime TransactionFilterProxy::MIN_DATE = QDateTime::fromTime_t(0);
@@ -41,7 +37,7 @@ bool TransactionFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex &
     qint64 amount = llabs(index.data(TransactionTableModel::AmountRole).toLongLong());
     int status = index.data(TransactionTableModel::StatusRole).toInt();
 
-    if(!showInactive && status == TransactionStatus::Conflicted)
+    if(!showInactive && (status == TransactionStatus::Conflicted || status == TransactionStatus::NotAccepted))
         return false;
     if(!(TYPE(type) & typeFilter))
         return false;

@@ -1,12 +1,10 @@
-// Copyright (c) 2011-2015 The Bitcoin Core developers
-// Copyright (c) 2014-2017 The Dash Core developers
-// Copyright (c) 2017-2018 The BitmexCoin Core developers
-// Distributed under the MIT software license, see the accompanying
+// Copyright (c) 2011-2014 The Bitcoin developers
+// Copyright (c) 2014-2015 The Dash developers
+// Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "bitcoinunits.h"
-#include "chainparams.h"
-#include "primitives/transaction.h"
+#include "main.h"
 
 #include <QSettings>
 #include <QStringList>
@@ -20,10 +18,9 @@ BitcoinUnits::BitcoinUnits(QObject *parent):
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(BMEC);
-    unitlist.append(mBMEC);
-    unitlist.append(uBMEC);
-    unitlist.append(duffs);
+    unitlist.append(BTC);
+    unitlist.append(mBTC);
+    unitlist.append(uBTC);
     return unitlist;
 }
 
@@ -31,10 +28,9 @@ bool BitcoinUnits::valid(int unit)
 {
     switch(unit)
     {
-    case BMEC:
-    case mBMEC:
-    case uBMEC:
-    case duffs:
+    case BTC:
+    case mBTC:
+    case uBTC:
         return true;
     default:
         return false;
@@ -43,53 +39,23 @@ bool BitcoinUnits::valid(int unit)
 
 QString BitcoinUnits::name(int unit)
 {
-    if(Params().NetworkIDString() == CBaseChainParams::MAIN)
+    switch(unit)
     {
-        switch(unit)
-        {
-            case BMEC: return QString("BMEC");
-            case mBMEC: return QString("mBMEC");
-            case uBMEC: return QString::fromUtf8("μBMEC");
-            case duffs: return QString("duffs");
-            default: return QString("???");
-        }
-    }
-    else
-    {
-        switch(unit)
-        {
-            case BMEC: return QString("tBMEC");
-            case mBMEC: return QString("mtBMEC");
-            case uBMEC: return QString::fromUtf8("μtBMEC");
-            case duffs: return QString("tduffs");
-            default: return QString("???");
-        }
+    case BTC: return QString("BMEC");
+    case mBTC: return QString("mBMEC");
+    case uBTC: return QString::fromUtf8("μBMEC");
+    default: return QString("???");
     }
 }
 
 QString BitcoinUnits::description(int unit)
 {
-    if(Params().NetworkIDString() == CBaseChainParams::MAIN)
+    switch(unit)
     {
-        switch(unit)
-        {
-            case BMEC: return QString("BitmexCoin");
-            case mBMEC: return QString("Milli-BitmexCoin (1 / 1" THIN_SP_UTF8 "000)");
-            case uBMEC: return QString("Micro-BitmexCoin (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-            case duffs: return QString("Ten Nano-BitmexCoin (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-            default: return QString("???");
-        }
-    }
-    else
-    {
-        switch(unit)
-        {
-            case BMEC: return QString("TestBitmexCoins");
-            case mBMEC: return QString("Milli-TestBitmexCoin (1 / 1" THIN_SP_UTF8 "000)");
-            case uBMEC: return QString("Micro-TestBitmexCoin (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-            case duffs: return QString("Ten Nano-TestBitmexCoin (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-            default: return QString("???");
-        }
+    case BTC: return QString("Magnets");
+    case mBTC: return QString("Milli-Magnets (1 / 1,000)");
+    case uBTC: return QString("Micro-Magnets (1 / 1,000,000)");
+    default: return QString("???");
     }
 }
 
@@ -97,11 +63,21 @@ qint64 BitcoinUnits::factor(int unit)
 {
     switch(unit)
     {
-    case BMEC:  return 100000000;
-    case mBMEC: return 100000;
-    case uBMEC: return 100;
-    case duffs: return 1;
+    case BTC:  return 100000000;
+    case mBTC: return 100000;
+    case uBTC: return 100;
     default:   return 100000000;
+    }
+}
+
+int BitcoinUnits::amountDigits(int unit)
+{
+    switch(unit)
+    {
+    case BTC: return 8; // 21,000,000 (# digits, without commas)
+    case mBTC: return 11; // 21,000,000,000
+    case uBTC: return 14; // 21,000,000,000,000
+    default: return 0;
     }
 }
 
@@ -109,10 +85,9 @@ int BitcoinUnits::decimals(int unit)
 {
     switch(unit)
     {
-    case BMEC: return 8;
-    case mBMEC: return 5;
-    case uBMEC: return 2;
-    case duffs: return 0;
+    case BTC: return 8;
+    case mBTC: return 5;
+    case uBTC: return 2;
     default: return 0;
     }
 }
@@ -132,25 +107,25 @@ QString BitcoinUnits::format(int unit, const CAmount& nIn, bool fPlus, Separator
     QString quotient_str = QString::number(quotient);
     QString remainder_str = QString::number(remainder).rightJustified(num_decimals, '0');
 
-    // Use SI-style thin space separators as these are locale independent and can't be
-    // confused with the decimal marker.
-    QChar thin_sp(THIN_SP_CP);
-    int q_size = quotient_str.size();
-    if (separators == separatorAlways || (separators == separatorStandard && q_size > 4))
-        for (int i = 3; i < q_size; i += 3)
-            quotient_str.insert(q_size - i, thin_sp);
+    // Right-trim excess zeros after the decimal point
+    int nTrim = 0;
+    for (int i = remainder_str.size()-1; i>=2 && (remainder_str.at(i) == '0'); --i)
+        ++nTrim;
+    remainder_str.chop(nTrim);
 
     if (n < 0)
         quotient_str.insert(0, '-');
     else if (fPlus && n > 0)
         quotient_str.insert(0, '+');
-
-    if (num_decimals <= 0)
-        return quotient_str;
-
     return quotient_str + QString(".") + remainder_str;
 }
 
+// TODO: Review all remaining calls to BitcoinUnits::formatWithUnit to
+// TODO: determine whether the output is used in a plain text context
+// TODO: or an HTML context (and replace with
+// TODO: BtcoinUnits::formatHtmlWithUnit in the latter case). Hopefully
+// TODO: there aren't instances where the result could be used in
+// TODO: either context.
 
 // NOTE: Using formatWithUnit in an HTML context risks wrapping
 // quantities at the thousands separator. More subtly, it also results
@@ -221,7 +196,7 @@ bool BitcoinUnits::parse(int unit, const QString &value, CAmount *val_out)
     {
         return false; // Longer numbers will exceed 63 bits
     }
-    CAmount retvalue(str.toLongLong(&ok));
+    CAmount retvalue = str.toLongLong(&ok);
     if(val_out)
     {
         *val_out = retvalue;

@@ -1,59 +1,76 @@
-BitmexCoin Core staging tree 0.12.1
-===============================
 
-`master:` [![Build Status](https://travis-ci.org/BitmexCoincoin/BitmexCoin.svg?branch=master)](https://travis-ci.org/BitmexCoincoin/BitmexCoin) `develop:` [![Build Status](https://travis-ci.org/BitmexCoincoin/BitmexCoin.svg?branch=develop)](https://travis-ci.org/BitmexCoincoin/BitmexCoin/branches)
+BitmexCoin is a X11 POS/POW + Masternodes Network.
 
-https://www.BitmexCoin.network
-
-
-What is BitmexCoin?
-----------------
-
-BitmexCoin (BMEC) is an innovative cryptocurrency. A form of digital currency secured by cryptography and issued through a decentralized and advanced mining market. Based on Dash, it's an enhanced and further developed version, featuring the masternode technology with 50% Reward, near-instant and secure payments as well as anonymous transactions. BitmexCoin has great potential for rapid growth and expansion. Based on a total Proof of Work and Masternode system, it is accesible to everyone, it ensures a fair and stable return of investment for the Graphics Processing Units (GPUs) miners and the Masternode holders.
-
-Additional information, wallets, specifications & roadmap: https://bitcointalk.org/index.php?topic=2442185.0
+BitmexCoin uses libsecp256k1,
+			  libgmp,
+			  Boost1.55,
+			  OR Boost1.57,  
+			  Openssl1.01p,
+			  Berkeley DB 4.8,
+			  QT5 to compile
 
 
-License
--------
+Block Spacing: 60 Seconds
+Stake Minimum Age: 24 Hours
 
-BitmexCoin Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
-information or see https://opensource.org/licenses/MIT.
+Port: 17177
+RPC Port: 17178
 
-Development Process
--------------------
 
-The `master` branch is meant to be stable. Development is normally done in separate branches.
-[Tags](https://github.com/BitmexCoincoin/BitmexCoin/tags) are created to indicate new official,
-stable release versions of BitmexCoin Core.
+BUILD LINUX
+-----------
+1) git clone https://github.com/bitmexcoinwork/bitmexcoin.git BitmexCoin
 
-The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md).
+2) cd BitmexCoin/src/leveldb
 
-Testing
--------
+3) make libleveldb.a libmemenv.a
 
-Testing and code review is the bottleneck for development; we get more pull
-requests than we can review and test on short notice. Please be patient and help out by testing
-other people's pull requests, and remember this is a security-critical project where any mistake might cost people
-lots of money.
+(check permissions if any error)
 
-### Automated Testing
+4) cd ..
 
-Developers are strongly encouraged to write [unit tests](/doc/unit-tests.md) for new code, and to
-submit new unit tests for old code. Unit tests can be compiled and run
-(assuming they weren't disabled in configure) with: `make check`
+5) sudo make -f makefile.unix            # Headless bitmexcoin
 
-There are also [regression and integration tests](/qa) of the RPC interface, written
-in Python, that are run automatically on the build server.
-These tests can be run (if the [test dependencies](/qa) are installed) with: `qa/pull-tester/rpc-tests.py`
+(optional)
 
-The Travis CI system makes sure that every pull request is built for Windows
-and Linux, OS X, and that unit and sanity tests are automatically run.
+6) strip bitmexcoind
 
-### Manual Quality Assurance (QA) Testing
+7) sudo cp bitmexcoind /usr/local/bin
 
-Changes should be tested by somebody other than the developer who wrote the
-code. This is especially important for large or high-risk changes. It is useful
-to add a test plan to the pull request description if testing the changes is
-not straightforward.
 
+
+
+BUILD WINDOWS
+-------------
+
+1) Download Qt from https://download.qt.io/archive/qt/ and install
+
+2) Download Magnet source from https://github.com/bitmexcoinwork/bitmexcoin/archive/master.zip 
+
+2.1) Unpack to C:/bitmexcoin
+
+3) Install Perl for windows from the homepage http://www.activestate.com/activeperl/downloads
+
+4) Download Python 2.7 https://www.python.org/downloads/windows/
+
+4.1) While installing python make sure to add python.exe to the path.
+
+5) Run msys.bat located in C:\MinGW49-32\msys\1.0
+
+6) cd /C/bitmexcoin/src/leveldb
+
+7) Type "TARGET_OS=NATIVE_WINDOWS make libleveldb.a libmemenv.a" and hit enter to build leveldb
+
+8) Exit msys shell
+
+9) Open windows command prompt
+
+10) cd C:/dev
+
+11) Type "49-32-qt5.bat" and hit enter to run
+
+12) cd ../bitmexcoin
+
+13) Type "qmake USE_UPNP=0" and hit enter to run
+
+14) Type "mingw32-make" and hit enter to start building. When it's finished you can find your .exe in the release folder.

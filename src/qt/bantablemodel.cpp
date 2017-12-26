@@ -9,10 +9,11 @@
 #include "guiutil.h"
 
 #include "sync.h"
-#include "utiltime.h"
+#include "util.h"
 
 #include <QDebug>
 #include <QList>
+#include <QTime>
 
 bool BannedNodeLessThan::operator()(const CCombinedBan& left, const CCombinedBan& right) const
 {
